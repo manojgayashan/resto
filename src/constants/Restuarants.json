@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "name": "Ministry of Crab",
+    "address": "Old Dutch Hospital Complex, Hospital Street, Colombo 01, Sri Lanka",
+    "description": "Famous seafood restaurant known for premium Sri Lankan crab dishes.",
+    "rating": 4.8,
+    "latitude": 0.001,
+    "longitude": 0.002,
+    "discount": 10,
+    "isActive": true,
+    "photos": [
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcrab00.jpg?alt=media&token=e3c5c506-4d5d-47c6-bab8-ea4574a35700",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcrab01.jpg?alt=media&token=67bc5577-f0c8-4799-a4fb-e6d36f703a2b",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcrab02.jpg?alt=media&token=88a62019-fbcf-48ab-b127-cbfbf911b14c"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Upali's by Nawaloka",
+    "address": "65 C W W Kannangara Mawatha, Colombo 07, Sri Lanka",
+    "description": "Traditional Sri Lankan cuisine with authentic local flavors.",
+    "rating": 4.6,
+    "latitude": 0.006,
+    "longitude": 0.002,
+    "discount": 15,
+    "isActive": true,
+    "photos": [
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fupalis00.jpg?alt=media&token=e7e94f24-72c9-4cd1-a73f-b7f423c7449d",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fupalis01.jpg?alt=media&token=911c3cc4-4eaa-4c92-a061-af0333c96566",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fupalis02.jpg?alt=media&token=638cecb3-0c88-4534-9fc7-ef743eb9c035"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "The Gallery Café",
+    "address": "2 Alfred House Road, Colombo 03, Sri Lanka",
+    "description": "Cozy café with artistic ambience and gourmet Western dishes.",
+    "rating": 4.7,
+    "latitude": 0.001,
+    "longitude": 0.001,
+    "discount": 20,
+    "isActive": false,
+    "photos": [
+      "./assets/crab00.jpg",
+      "./assets/crab00.jpg",
+      "./assets/crab00.jpg"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Cafe 1959",
+    "address": "Fountain Café, Arcade Independence Square, Colombo 07, Sri Lanka",
+    "description": "Vintage themed café offering coffee, desserts, and light meals.",
+    "rating": 4.5,
+    "latitude": -0.001,
+    "longitude": 0.002,
+    "discount": 5,
+    "isActive": true,
+    "photos": [
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcafe00.jpg?alt=media&token=4d831580-0f78-4c11-b2e7-e435ce857094",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcafe01.jpg?alt=media&token=80fffe20-f691-42d1-be94-f1db63cb3cdf",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcafe02.jpg?alt=media&token=57d8a1dd-110a-41d0-b80e-72b6d3a7659a"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Nuga Gama",
+    "address": "Cinnamon Grand Colombo, 77 Galle Road, Colombo 03, Sri Lanka",
+    "description": "Village-style dining experience with traditional Sri Lankan food.",
+    "rating": 4.4,
+    "latitude": -0.001,
+    "longitude": -0.002,
+    "discount": 12,
+    "isActive": true,
+    "photos": [
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fnugagama00.jpg?alt=media&token=98648ee6-2060-4c73-a51e-367c29fa9d8d",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fnugagama01.jpg?alt=media&token=4ca6f55f-93b0-46a8-bd0c-1160d431fa6b",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fnugagama02.jpg?alt=media&token=2c8f9ef5-e03d-485b-9de6-cd963395f123"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "The Lagoon",
+    "address": "Cinnamon Grand Colombo, 77 Galle Road, Colombo 03, Sri Lanka",
+    "description": "Seafood restaurant specializing in lagoon-fresh ingredients.",
+    "rating": 4.6,
+    "latitude": 0.003,
+    "longitude": -0.002,
+    "discount": 18,
+    "isActive": true,
+    "photos": [
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Flagoon00.jpg?alt=media&token=40fb34be-5482-4472-9068-5708e4755ccc",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Flagoon01.jpg?alt=media&token=9c103c05-bbe6-498b-b337-16eb3abe2fca",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Flagoon02.jpg?alt=media&token=dad564f7-f011-4105-8976-e8784f7bc5a5"
+    ]
+  },
+  {
+    "id": 7,
+    "name": "The Commons Coffee House",
+    "address": "39 Flower Road, Colombo 07, Sri Lanka",
+    "description": "Modern café serving artisan coffee and brunch favorites.",
+    "rating": 4.3,
+    "latitude": 0.0045,
+    "longitude": -0.0015,
+    "discount": 8,
+    "isActive": true,
+    "photos": [
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcommons00.jpg?alt=media&token=5703935b-a14c-4b7e-9efb-333307313069",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcommons01.jpg?alt=media&token=f7fa11dc-21d8-4cf8-b061-6d0142f2ef3d",
+      "https://firebasestorage.googleapis.com/v0/b/resto-fff55.firebasestorage.app/o/restaurents%2Fcommons02.jpg?alt=media&token=615afcfd-15a7-48ad-a4ea-bef2207c4f44"
+    ]
+  }
+]
