@@ -38,7 +38,7 @@ interface RestoButtonProps {
 }
 
 const SIZE_MAP = {
-  xsm: { height: 30, textSize: 12, paddingHorizontal: 8 },
+  xsm: { height: 30, textSize: 14, paddingHorizontal: 8 },
   sm: { height: 36, textSize: 12, paddingHorizontal: 12 },
   md: { height: 40, textSize: 14, paddingHorizontal: 12 },
   lg: { height: 60, textSize: 18, paddingHorizontal: 20 },

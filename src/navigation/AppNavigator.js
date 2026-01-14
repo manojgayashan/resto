@@ -4,6 +4,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
+import Restaurant from '../screens/Restaurant'
 import Settings from '../screens/Settings';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import colors from '../constants/colors'
@@ -27,15 +28,15 @@ function HomeTabs() {
 function RootStack() {
   return (
     <Stack.Navigator>
-      {/* <Stack.Screen
-        name="HomeTabs"
-        component={HomeTabs}
-        options={{ headerShown: false }}
-      /> */}
       <Stack.Screen
         name="Home"
         component={Home}
-        options={{ headerShown: false }}
+        options={{ headerShown: false,freezeOnBlur:true }}
+      />
+      <Stack.Screen
+        name="Restaurant"
+        component={Restaurant}
+        options={{ headerShown: false,freezeOnBlur:true }}
       />
     </Stack.Navigator>
   );

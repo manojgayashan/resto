@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
   shadowOffset: { width: 0, height: 2 }
   },
   contentContainer:{
-    
     backgroundColor:colors.background
   },
   discount:{
@@ -144,7 +143,71 @@ const styles = StyleSheet.create({
   whiteContainer:{
     padding:16,
     backgroundColor:colors.white
-  }
+  },
+  restaurantCard:{
+    backgroundColor:colors.white,
+    marginHorizontal:16,
+    marginTop:16,
+    padding:16,
+    borderRadius:16,
+    borderWidth:0.6,
+    borderColor:colors.black100,
+    flexDirection:'row',
+    alignItems:'center'
+  },
+  body:{
+    backgroundColor:colors.background,
+    flex:1
+  },
+  restaurantCardImage:{
+    height:windowWidth/5,
+    width:windowWidth/5,
+    borderRadius:8,
+    borderWidth:0.6,
+    borderColor:colors.black100,
+    marginRight:16
+  },
+  addressInput:{
+     width: windowWidth - 32,
+                justifyContent: 'center',
+                height: 44,
+                alignItems: 'center',
+                position: 'relative',
+                zIndex: 5,
+                borderRadius: 50,
+                borderWidth: 1,
+                borderColor: colors.black100,
+                paddingHorizontal:16
+  },
+  addressFull:{ 
+    backgroundColor: colors.background, 
+    borderWidth: 1, 
+    borderColor: colors.shadow, 
+    borderRadius: 8, 
+    overflow: 'hidden', 
+    position: 'absolute', 
+    zIndex: 11, 
+    top: 20, 
+    right: -10,
+    padding:16,
+    width:windowWidth/1.3
+    
+   },
+   FAB:{
+    backgroundColor:colors.white,
+    position:'absolute',
+    bottom:40,
+    right:16,
+    padding:16,
+    borderRadius:50,
+
+  elevation: 8,
+
+  shadowColor: '#000',
+  shadowOpacity: 0.18,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 4 }
+   }
 });
 
 export default styles;

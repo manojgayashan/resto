@@ -1,85 +1,117 @@
-import { View, Text, TouchableOpacity, ScrollView, Image, Dimensions, FlatList } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, Image, Dimensions, FlatList, StyleSheet } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import styles from '../constants/styles'
 import RestoButton from '../components/RestoButton'
 import colors from '../constants/colors'
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6'
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
 import Feather from 'react-native-vector-icons/Feather'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import AntDesign from 'react-native-vector-icons/AntDesign'
-import RestoTextInput from '../components/RestoTextInput'
 import Geolocation from '@react-native-community/geolocation'
-import MapView, { Callout, Marker, MarkerAnimated } from 'react-native-maps'
+import MapView from 'react-native-maps'
 import { createRegion } from '../utils/map'
 import { getAddressFromCoords } from '../utils/getAddress'
-import RestoMarker from '../components/RestoMarker'
-import BottomSheet, { BottomSheetFlashList, BottomSheetScrollView, BottomSheetView, useBottomSheetScrollableCreator, WINDOW_HEIGHT, WINDOW_WIDTH } from '@gorhom/bottom-sheet';
+import BottomSheet, { useBottomSheetScrollableCreator, WINDOW_WIDTH } from '@gorhom/bottom-sheet';
 import * as Animatable from 'react-native-animatable';
-import RestoImageLoader from '../components/RestoImageLoader'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { useNavigation } from '@react-navigation/native'
+import Skeleton from "react-native-reanimated-skeleton";
 
 export default function Home() {
-  // Geolocation.getCurrentPosition(info => console.log(info));
+
   const bottomSheetRef = useRef();
-  const [position, setPosition] = useState(null)
-  const [region, setRegion] = useState(null)
-  const [address, setAddress] = useState('')
-  const [restaurant, setRestaurant] = useState(null)
+  const navigation = useNavigation();
+  const [position, setPosition] = useState(null);
+  const [region, setRegion] = useState(null);
+  const [address, setAddress] = useState('');
+  const [restaurant, setRestaurant] = useState(null);
+  const [sortType, setSortType] = useState('distance'); // 'distance' | 'rating'
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [isAddressClick, setIsAddressClick] = useState(false);
+
+  const [key, setKey] = useState(0);
+
   const ScrollableFlatList = useBottomSheetScrollableCreator(FlatList);
+  const data = require('../constants/Restuarants.json');
 
-  const handleSheetChanges = useCallback((index) => {
-    console.log('handleSheetChanges', index);
-  }, [])
-
-  const data = require('../constants/Restuarants.json')
-
-  const getCurrentPosition = () => {
-    Geolocation.watchPosition(
+  const getCurrentPosition = useCallback(() => {
+    setLoading(true)
+    Geolocation.getCurrentPosition(
       async (pos) => {
-        let coordinates = pos.coords
-        console.log(pos.coords)
+        const coordinates = pos.coords;
         setPosition(coordinates);
-        setRegion(createRegion(coordinates.latitude, coordinates.longitude))
-        const address = await getAddressFromCoords(coordinates.latitude, coordinates.longitude);
-        setAddress(address)
+        const addr = await getAddressFromCoords(coordinates.latitude, coordinates.longitude);
+        setAddress(addr);
+        setLoading(false)
       },
       (error) => Alert.alert('GetCurrentPosition Error', JSON.stringify(error)),
       {
         enableHighAccuracy: true,
-        distanceFilter: 10,      // 🔹 meters (update only if moved 10m)
-        interval: 5000,          // 🔹 Android: 5 seconds
-        fastestInterval: 3000,   // 🔹 Android: minimum time between updates
+        distanceFilter: 10,
+        interval: 5000,
+        fastestInterval: 3000,
         useSignificantChanges: false,
         showsBackgroundLocationIndicator: false,
       }
-    );
-  };
+    )
+  })
+
+  Geolocation.setRNConfiguration({
+    skipPermissionRequests: false,
+    authorizationLevel: 'whenInUse',
+  });
+
+  const watchId = useRef(null);
 
 
   useEffect(() => {
     getCurrentPosition()
+  }, []);
 
-  }, [])
+  // const watchId = useRef(null);
 
-  const onMarkerPress = (marker) => {
-    setRestaurant(null)
-    console.log(marker)
-    bottomSheetRef.current?.snapToIndex(1);
-    setRestaurant(marker)
-  }
+
+
+  // 🔹 Calculate distance between two coordinates
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    if (!lat1 || !lon1 || !lat2 || !lon2) return 0;
+    const R = 6371; // km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+      0.5 - Math.cos(dLat) / 2 +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      (1 - Math.cos(dLon)) / 2;
+    return R * 2 * Math.asin(Math.sqrt(a));
+  };
+
+  // 🔹 Filter and sort restaurants
+  const filteredData = data
+    .filter(item => item.isActive)
+    .map(item => ({
+      ...item,
+      distance: position
+        ? getDistance(position.latitude, position.longitude, item.latitude, item.longitude)
+        : 0
+    }))
+    .sort((a, b) => {
+      if (sortType === 'distance') return a.distance - b.distance;
+      if (sortType === 'rating') return b.rating - a.rating;
+      return 0;
+    });
+
+    const refresh =()=>{
+      getCurrentPosition()
+      setKey(key+1)
+    }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+
       <View style={styles.homeHeader}>
         <View style={styles.row}>
-          <RestoButton
-            variant='outline'
-            icon={<FontAwesome6 name='chevron-left' size={14} color={colors.black400} />}
-            backgroundColor={colors.background}
-            borderColor={colors.shadow}
-            size='sm'
-            marginRight={10}
-          />
           <RestoButton
             variant='outline'
             icon={<Feather name='map-pin' size={18} color={colors.black400} />}
@@ -89,190 +121,101 @@ export default function Home() {
             marginRight={10}
           />
           <View>
-            <Text style={[styles.title12, { color: colors.black200 }]}>Offers Near</Text>
-            <View style={styles.row}>
-              <Text style={styles.title12}>{address.replace(/^[A-Z0-9+]+\s*,\s*/i, '')}</Text>
+            <Text style={[styles.title14, { color: colors.black200 }]}>Offers Near</Text>
 
-            </View>
+            <Skeleton
+              containerStyle={{ flex: 1, width: 300, height: 50,zIndex:6 }}
+              isLoading={loading}
+              layout={[
+                { key: "address", width: WINDOW_WIDTH / 1.45, height: 25, marginBottom: 6 }
+              ]}
+            >
+              <TouchableOpacity style={[styles.row,{alignItems:'center'}]} onPress={() => {setIsAddressClick(true)}}>
+                <Text style={[styles.title14, { width: WINDOW_WIDTH / 1.4, height: 22 }]} numberOfLines={1}>{address.replace(/^[A-Z0-9+]+\s*,\s*/i, '')}</Text>
+                <FontAwesome6 name='chevron-down' size={12} color={colors.black900} />
+              </TouchableOpacity>
+            </Skeleton>
 
+
+          {isAddressClick && (
+            <TouchableOpacity onPress={()=>setIsAddressClick(false)} style={styles.addressFull}>
+            <Text style={styles.title14}>{address}</Text>
+            </TouchableOpacity>
+          )}
           </View>
         </View>
-      </View>
-      <View style={styles.homeHeader}>
-        <View>
-          <RestoTextInput
-            placeholder='Search for Location You Want to Get Offer'
-            leftIcon={<Feather name='search' size={18} color={colors.black400} />}
-            size='sm'
-            fontSize={14}
-          />
-          
-          <ScrollView style={{marginRight:-16}} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingTop: 16 }}>
-
-            <RestoButton
-              variant='outline'
-              icon={<Feather name='align-center' size={16} color={colors.black400} />}
-              backgroundColor={colors.background}
-              borderColor={colors.shadow}
-              size='xsm'
-              marginRight={10}
-            />
 
 
-            <RestoButton
-              variant='outline'
-              icon={<Image source={require('../assets/chef-hat.png')} style={{ width: 16, height: 14, resizeMode: 'contain' }} />}
-              backgroundColor={colors.background}
-              borderColor={colors.shadow}
-              textColor={colors.black400}
-              size='xsm'
-              marginRight={10}
-              title='Cuisines'
+        <View style={{ marginTop: 16 }}>
+          <View style={[styles.row, { justifyContent: 'space-between' }]}>
+            <Text style={[styles.text14, { color: colors.primary,fontWeight:'700' }]}>{filteredData.length} <Text style={{fontWeight:'400'}}>Restaurants Found</Text></Text>
+            <TouchableOpacity
+              style={[styles.row, { alignItems: 'center', padding: 8, borderWidth: 1, borderColor: colors.shadow, borderRadius: 6, zIndex: 10 }]}
+              onPress={() => setMenuOpen(!menuOpen)}
+            >
+              <Feather name="filter" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+              <Text style={styles.text14}>Sort By: {sortType.charAt(0).toUpperCase() + sortType.slice(1)}</Text>
+              <Feather name={menuOpen ? "chevron-up" : "chevron-down"} size={14} color={colors.primary} style={{ marginLeft: 6 }} />
+            </TouchableOpacity>
+          </View>
+          {menuOpen && (
+            <View style={{ backgroundColor: colors.background, borderWidth: 1, borderColor: colors.shadow, borderRadius: 6, marginTop: 4, overflow: 'hidden', position: 'absolute', zIndex: 5, top: 36, right: 0 }}>
+              <TouchableOpacity
+                style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
+                onPress={() => { setSortType('distance'); setMenuOpen(false); }}
+              >
+                <Feather name="map-pin" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+                <Text style={[styles.text14,{fontWeight:sortType=='distance'?'700':'400'}]}>Distance</Text>
+              </TouchableOpacity>
 
-            />
-
-
-            <RestoButton
-              variant='outline'
-              icon={<Ionicons name='cafe-outline' size={16} color={colors.black400} />}
-              backgroundColor={colors.background}
-              borderColor={colors.shadow}
-              textColor={colors.black400}
-              size='xsm'
-              marginRight={10}
-              title='Cafe'
-            />
-
-            <RestoButton
-              variant='outline'
-              icon={<Ionicons name='restaurant-outline' size={16} color={colors.black400} />}
-              backgroundColor={colors.background}
-              borderColor={colors.shadow}
-              textColor={colors.black400}
-              size='xsm'
-              marginRight={10}
-              title='Restuaurents'
-            />
-            <RestoButton
-              variant='outline'
-              icon={<Ionicons name='restaurant-outline' size={16} color={colors.black400} />}
-              backgroundColor={colors.background}
-              borderColor={colors.shadow}
-              textColor={colors.black400}
-              size='xsm'
-              marginRight={10}
-              title='Pubs'
-            />
-
-
-          </ScrollView>
-        </View>
-        {/* <Text>{position.latitude}</Text> */}
-      </View>
-      {
-        region !== null ?
-          <MapView
-            region={region}
-            style={styles.map}
-            mapType='terrain'
-            moveOnMarkerPress={false}
-            // showsUserLocation={true}
-            
-          >
-            <View>
-              {data.map((marker, index) => (
-                marker.isActive &&
-                <Marker
-                  key={index}
-                  coordinate={{ latitude: marker.latitude + position.latitude, longitude: marker.longitude + position.longitude }}
-                  
-                  style={{ elevation: 5 }}
-                  onPress={() => onMarkerPress(marker)}
-                  tracksViewChanges={false}
-                  focusable={false}
-                >
-                  <RestoMarker rating={marker.rating} name={marker.name} />
-                </Marker>
-              ))}
-
-              <MarkerAnimated coordinate={{ latitude: position.latitude, longitude: position.longitude }}>
-                <View style={styles.positionWrapper}>
-                  <View style={styles.position} >
-                    <Animatable.View animation="pulse" easing="ease-out" iterationCount="infinite" style={styles.positionDot} key={1} />
-                  </View>
-                </View>
-              </MarkerAnimated>
-
+              <TouchableOpacity
+                style={{ padding: 10, flexDirection: 'row', alignItems: 'center' }}
+                onPress={() => { setSortType('rating'); setMenuOpen(false); }}
+              >
+                <Feather name="star" size={16} color={colors.primary} style={{ marginRight: 6 }} />
+                <Text style={[styles.text14,{fontWeight:sortType=='rating'?'700':'400'}]}>Rating</Text>
+              </TouchableOpacity>
             </View>
-          </MapView>
-          :
-          null
-      }
-      <BottomSheet
-        ref={bottomSheetRef}
-        onChange={handleSheetChanges}
-        snapPoints={[WINDOW_HEIGHT/1.8, WINDOW_HEIGHT/1.8]}
-        index={-1}
-        enablePanDownToClose
-      >
-        <BottomSheetScrollView style={styles.contentContainer}>
-          {
-            restaurant !== null ?
-              <View>
-                <View style={styles.whiteContainer}>
-                  <RestoImageLoader uri={restaurant.photos[0]} key={restaurant.id} />
-                  <View style={[styles.row, { justifyContent: 'space-between', alignItems: 'flex-start' }]}>
+          )}
+        </View>
+      </View>
 
-                    <Text style={[styles.title, { paddingVertical: 12, width: WINDOW_WIDTH / 2 }]}>{restaurant.name}</Text>
-                    <View style={styles.discount}>
-                      <Text style={[styles.text14, { color: colors.secondary }]}>Discount upto {restaurant.discount}%</Text>
-                    </View>
-                  </View>
-                  <Text style={[styles.text14, { color: colors.black400 }]}>⭐ {restaurant.rating} | {restaurant.address}</Text>
-                  <View style={[styles.row, { justifyContent: 'space-between', paddingTop: 16 }]}>
-                    <RestoButton
-                      title='Direction'
-                      icon={<MaterialIcons name='directions' size={24} color={colors.primary} />}
-                      variant='solid'
-                      backgroundColor={colors.secondary}
-                      size='md'
-                      textColor={colors.primary}
-                      width={WINDOW_WIDTH / 2.25}
-                    />
-                    <RestoButton
-                      title='Menu'
-                      icon={<View style={{ height: 20, width: 20, borderRadius: 4, backgroundColor: colors.secondary, alignItems: 'center', justifyContent: 'center' }}><AntDesign name='bars' size={16} color={colors.primary} /></View>}
-                      variant='solid'
-                      backgroundColor={colors.primary}
-                      size='md'
-                      textColor={colors.secondary}
-                      width={WINDOW_WIDTH / 2.25}
-                    />
+      <FlatList
+      key={key}
+        data={filteredData}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+        style={{backgroundColor:colors.background}}
+        renderItem={({ item, index }) => (
+          <Animatable.View key={index} animation={'fadeInLeft'} delay={index * 100}>
+            <TouchableOpacity style={styles.restaurantCard} onPress={() => { navigation.navigate('Restaurant', { restaurant: item }) }}>
+              <Image source={{ uri: item.photos[0] }} style={styles.restaurantCardImage} />
+              <View>
+                <View style={[styles.row, { justifyContent: 'space-between', width: WINDOW_WIDTH - 166 }]}>
+                  <Text style={styles.title14}>{item.name}</Text>
+                  <View style={styles.row}>
+                    <AntDesign name={'star'} size={16} color={colors.primary} />
+                    <Text style={[styles.text14, { color: colors.black300, paddingLeft: 8 }]}>{item.rating}</Text>
                   </View>
                 </View>
-                <View style={[styles.whiteContainer, { marginTop: 16 }]}>
-                  <BottomSheetFlashList
-                    data={restaurant.photos.filter((_, index) => index !== 0)}
-                    keyExtractor={(item, index) => `${item}-${index}`}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item }) => (
-                      <Animatable.Image
-                        source={{ uri: item }}
-                        style={{    width: WINDOW_WIDTH-64,height: 140,marginRight:16,borderRadius:8}}
-                        resizeMode="cover"
-                        animation="fadeIn"
-                        duration={300}
-                      />
-                    )}
-                  />
+                <View style={[styles.row, { width: WINDOW_WIDTH - 182, paddingTop: 8 }]}>
+                  <Feather name="map-pin" size={16} color={colors.primary} />
+                  <Text style={[styles.text14, { color: colors.black300, paddingLeft: 8 }]} numberOfLines={1}>{item.address}</Text>
                 </View>
               </View>
-              :
-              null
-          }
-        </BottomSheetScrollView>
-      </BottomSheet>
-    </View>
-  )
+            </TouchableOpacity>
+          </Animatable.View>
+        )}
+      />
+      {menuOpen && (
+        <TouchableOpacity onPress={()=>setMenuOpen(false)} style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.2)' }]} />
+      )}
+      {isAddressClick && (
+        <TouchableOpacity onPress={()=>setIsAddressClick(false)} style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.2)' }]} />
+      )}
+
+      <TouchableOpacity style={styles.FAB} onPress={()=>refresh()}>
+        <SimpleLineIcons name='refresh' color={colors.primary} size={36} />
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
 }
